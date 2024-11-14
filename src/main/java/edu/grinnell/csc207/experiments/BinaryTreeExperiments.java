@@ -25,7 +25,7 @@ public class BinaryTreeExperiments {
         "frog", "gnu", "hippo", "iguana", "jackalope", "koala", "llama"};
     BinaryTree<String> tree = new BinaryTree<String>(strings);
 
-    tree.dump(pen);
+    tree.print(pen);
     pen.close();
   } // main
 } // class BinaryTreeExperiments
