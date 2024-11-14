@@ -2,6 +2,7 @@ package edu.grinnell.csc207.util;
 
 import java.io.PrintWriter;
 import java.util.Iterator;
+import java.util.Stack;
 
 /**
  * Simple binary trees.
@@ -66,6 +67,17 @@ public class BinaryTree<T> implements Iterable<T> {
     dump(pen, root, "");
   } // dump(PrintWriter)
 
+
+  public void elements01(PrintWriter pen) {
+    elements01(pen, root);
+    pen.println("\n");
+  } // elements01(Printwriter)
+
+  public void elements02(PrintWriter pen) {
+    elements02(pen, root);
+    pen.println("\n");
+  } // elements02(Printwriter)
+
   /**
    * Get an iterator for the tree.
    *
@@ -74,17 +86,66 @@ public class BinaryTree<T> implements Iterable<T> {
   public Iterator<T> iterator() {
     return new Iterator<T>() {
 
+      Stack<BinaryTreeNode<T>> remaining = new Stack<BinaryTreeNode<T>>();
+
+      {
+        remaining.push(BinaryTree.this.root);
+      }
+
       public boolean hasNext() {
-        // STUB
-        return false;
+        return !remaining.isEmpty();
       } // hasNext()
 
       public T next() {
-        // STUB
-        return null;
+        BinaryTreeNode<T> next = remaining.pop();
+        if (next.right != null) {
+          remaining.push(next.right);
+        } // if (node.right != null)
+        if (next.left != null) {
+          remaining.push(next.left);
+        } // if (node.left != null)
+        return next.value;
       } // next()
     }; // new Iterator()
   } // iterator()
+
+  /**
+ * Print all of the elements in some order or other.
+ * 
+ * Note: We are trying to avoid recursion.
+ */
+public void print(PrintWriter pen) {
+  // A collection of the remaining things to print
+  Stack<Object> remaining = new Stack<Object>();
+  remaining.push(this.root);
+
+
+  // Invariants: 
+  //   remaining only contains Strings or Nodes
+  //   All values in the tree are either
+  //     (a) already printed,
+  //     (b) in remaining, or
+  //     (c) in or below a node in remaining
+  while (!remaining.isEmpty()) {
+    Object next = remaining.pop();
+    if (next instanceof BinaryTreeNode<?>) {
+      @SuppressWarnings("unchecked")
+      BinaryTreeNode<T> node = (BinaryTreeNode<T>) next;
+      remaining.push(node.value);
+      if (node.right != null) {
+        remaining.push(node.right);
+      } // if (node.right != null)
+      if (node.left != null) {
+        remaining.push(node.left);
+      } // if (node.left != null)
+
+    } else {
+      pen.print(next);
+      pen.print(" ");
+    } // if/else
+  } // while
+  pen.println();
+} // print(PrintWriter)
 
   // +---------+-----------------------------------------------------
   // | Helpers |
@@ -111,6 +172,23 @@ public class BinaryTree<T> implements Iterable<T> {
       } // if has children
     } // else
   } // dump
+
+  void elements01(PrintWriter pen, BinaryTreeNode<T> node) {
+    if (node != null) {
+      pen.print(node.value + " ");
+      elements01(pen, node.left);
+      elements01(pen, node.right);
+    } // if
+  } // elements01
+
+  void elements02(PrintWriter pen, BinaryTreeNode<T> node) {
+    if (node != null) {
+      elements02(pen, node.left);
+      pen.print(node.value + " ");
+      elements02(pen, node.right);
+    } // if
+  } // elements02
+
 
   /**
    * Build a tree from a subarray from lb (inclusive) to ub (exclusive).
